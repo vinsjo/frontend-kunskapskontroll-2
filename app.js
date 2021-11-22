@@ -1,4 +1,4 @@
-const getRegExp = (chars) => new RegExp(`[${chars}]`, "ig");
+const getRegX = (chars) => new RegExp(`[${chars}]`, "ig");
 const validateInput = (input) => !!input.match(/[a-z]/i) && input.length === 1;
 const fullMatch = (str, regExp) => [...str.match(regExp)].length >= str.length;
 const gameWord = [
@@ -13,21 +13,15 @@ const player = {
 	guesses: "",
 	hasQuit: false,
 	hasWon: false,
-	get isAlive() {
-		return this.lives > 0;
-	},
-	get regExp() {
-		return getRegExp(this.guesses);
-	},
 };
-while (player.isAlive && !player.hasQuit && !player.hasWon) {
+while (player.lives > 0 && !player.hasQuit && !player.hasWon) {
 	const message =
 		[...gameWord]
-			.map((char) => (!!char.match(player.regExp) ? char : "_"))
+			.map((char) => (!!char.match(getRegX(player.guesses)) ? char : "_"))
 			.join(" ") +
 		`\n\nLives left: ${player.lives}` +
 		`\nGuesses made: ${[...player.guesses]
-			.filter((char) => !char.match(getRegExp(gameWord)))
+			.filter((char) => !char.match(getRegX(gameWord)))
 			.join(", ")}`;
 	let validInput;
 	do {
@@ -35,8 +29,8 @@ while (player.isAlive && !player.hasQuit && !player.hasWon) {
 		if ((player.hasQuit = guess === null)) break;
 		if (!(validInput = validateInput(guess))) continue;
 		player.guesses += guess;
-		if (!gameWord.match(getRegExp(guess))) player.lives--;
-		else player.hasWon = fullMatch(gameWord, player.regExp);
+		if (!gameWord.match(getRegX(guess))) player.lives--;
+		else player.hasWon = fullMatch(gameWord, getRegX(player.guesses));
 	} while (!validInput);
 }
 if (player.hasQuit) alert("You have canceled the game");
