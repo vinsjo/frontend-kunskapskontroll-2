@@ -16,10 +16,10 @@ försöka upprätthålla en rimlig namngivning på variabler/funktioner och en
 logisk/funktionell struktur överlag.
 */
 
-/** Determine if variable is a string and in range a to z */
-const aToZ = str => typeof str === "string" && /[a-z]/i.test(str);
-/** Create RegExp that matches characters in a given string */
-const regX = chars => (aToZ(chars) ? new RegExp(`[${chars}]`, "ig") : /\0/);
+/** Determine if a string is ONLY in range a to z, not case sensitive */
+const isAToZ = str => /[a-z]+/i.test(str) && !/[^a-z]+/i.test(str);
+/** Create RegExp that matches characters in a string, not case sensitive */
+const regX = chars => (isAToZ(chars) ? new RegExp(`[${chars}]`, "ig") : /\0/);
 /** Determine if all characters in a string matches a RegExp pattern */
 const matchesAll = (str, regExp) => (str.match(regExp) || []).join("") === str;
 
@@ -48,7 +48,7 @@ while (player.lives > 0 && !player.hasQuit && !player.hasWon) {
 	do {
 		const guess = prompt(message);
 		if ((player.hasQuit = guess === null)) break;
-		if (!(validInput = aToZ(guess) && guess.length === 1)) continue;
+		if (!(validInput = isAToZ(guess) && guess.length === 1)) continue;
 		player.guesses += guess;
 		if (!regX(guess).test(word)) player.lives--;
 		else player.hasWon = matchesAll(word, regX(player.guesses));
